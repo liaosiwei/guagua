@@ -1,3 +1,4 @@
+# coding=UTF-8
 from random import randint
 from django.shortcuts import render_to_response
 from django.utils import simplejson
@@ -25,3 +26,13 @@ def ajax_plotdata(request):
     
     serialized = simplejson.dumps(to_return)
     return HttpResponse(serialized, mimetype="application/json")
+
+def pie(request):
+    return render_to_response('pie.html')
+
+def ajax_piedata(request):
+    to_return = {'stat': 'failed', 'data': ''}
+    to_return['data'] = [{'label': u'武汉', 'data': 200}, {'label': u'北京', 'data': 300}, {'label': u'上海', 'data': 420}, {'label': u'广州', 'data': 403}]
+    serialized = simplejson.dumps(to_return)
+    return HttpResponse(serialized, mimetype="application/json")
+    

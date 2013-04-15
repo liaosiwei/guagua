@@ -1,0 +1,88 @@
+{% extends "index.html" %}
+
+{% block title %}客户地区分布图{% endblock %}
+
+{% block css %}
+<link href="/media/css/plot.css" rel="stylesheet">
+{% endblock %}
+
+{% block navlist %}
+	<li class="nav-header">客户地区分布图</li>
+	<li><a href="/plot/">访问流量统计图</a></li>
+	<li class="active"><a href="/pie/">访问地区分布图</a></li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+	<li class="nav-header">Sidebar</li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+	<li class="nav-header">Sidebar</li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+	<li><a href="#">Link</a></li>
+{% endblock %}
+
+{% block content %}
+	<div class="plot" id="header">
+		<h2>店铺访问地区分布图</h2>
+	</div>
+
+	<div class="plot" id="content">
+
+		<div class="demo-container">
+			<div id="plotplaceholder" class="demo-placeholder"></div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block js %}
+<script src="/media/js/jquery.flot.js"></script>
+<script src="/media/js/jquery.flot.pie.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	var dataurl = "/piedata/";
+	$.ajax({
+		url: dataurl,
+		type: "GET",
+		dataType: "json",
+		success: onDataReceived
+	});
+
+	function onDataReceived(series) {
+		var placeholder = $("#plotplaceholder");
+		//var data = series['data'];
+ 		var data = [
+			{ label: "Series1",  data: 10},
+			{ label: "Series2",  data: 30},
+			{ label: "Series3",  data: 90},
+			{ label: "Series4",  data: 70},
+			{ label: "Series5",  data: 80},
+			{ label: "Series6",  data: 110}
+		];
+		placeholder.unbind();
+		$.plot(placeholder, data, {
+			series: {
+				pie: { 
+					show: true,
+					radius: 1,
+					label: {
+						show: true,
+						radius: 3/4,
+						formatter: labelFormatter,
+						background: {
+							opacity: 0.5
+						}
+					}
+				}
+			},
+			legend: {
+				show: false
+			}
+		});
+	}
+})
+</script>
+{% endblock %}
