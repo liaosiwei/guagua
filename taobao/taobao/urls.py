@@ -7,6 +7,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
+    url(r'^auth/$', 'guagua.views.fetchsession'),
     url(r'^', include('guagua.urls')),
     # Examples:
     # url(r'^$', 'taobao.views.home', name='home'),
