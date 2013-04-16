@@ -4,9 +4,12 @@ from django.shortcuts import render_to_response
 from django.utils import simplejson
 from django.http import HttpResponse
 
+import top as taobao
 import top.api as topapi
-
-topapi.setDefaultAppInfo("21446815", "5e8279097b48bd0eefcec5f48c7381eb")
+# next for online app
+#taobao.setDefaultAppInfo("21446815", "5e8279097b48bd0eefcec5f48c7381eb")
+# next for sandbox test
+taobao.setDefaultAppInfo("1021446815", "sandbox97b48bd0eefcec5f48c7381eb")
 
 def top(api_name, **kwarg):
     global topapi
@@ -16,6 +19,8 @@ def top(api_name, **kwarg):
         raise KeyError('no api found')
     # 测试用
     a = api("gw.api.tbsandbox.com")
+    # 上线环境用
+    # a = api()
     while kwarg:
         key, value = kwarg.popitem()
         if hasattr(a, key):
