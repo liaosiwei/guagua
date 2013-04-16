@@ -4,7 +4,24 @@ from django.shortcuts import render_to_response
 from django.utils import simplejson
 from django.http import HttpResponse
 
+import top.api as topapi
 
+topapi.setDefaultAppInfo("21446815", "5e8279097b48bd0eefcec5f48c7381eb")
+
+def top(api_name, **kwarg):
+    global topapi
+    if hasattr(topapi, api_name):
+        api = getattr(topapi, api_name)
+    else:
+        raise KeyError('no api found')
+    # 测试用
+    a = api("gw.api.tbsandbox.com")
+    while kwarg:
+        key, value = kwarg.popitem()
+        if hasattr(a, key):
+            setattr(a, key, value) 
+    return a.getResponse()
+    
 
 def base(request):
     return render_to_response('base.html')
@@ -32,7 +49,7 @@ def pie(request):
 
 def ajax_piedata(request):
     to_return = {'stat': 'failed', 'data': ''}
-    to_return['data'] = [{'label': u'武汉', 'data': 200}, {'label': u'北京', 'data': 300}, {'label': u'上海', 'data': 420}, {'label': u'广州', 'data': 403}]
+    to_return['data'] = [{'label': u'武汉', 'data': 10}, {'label': u'北京', 'data': 300}, {'label': u'上海', 'data': 420}, {'label': u'广州', 'data': 403}]
     serialized = simplejson.dumps(to_return)
     return HttpResponse(serialized, mimetype="application/json")
     

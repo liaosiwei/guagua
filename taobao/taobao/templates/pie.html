@@ -53,21 +53,22 @@ $(document).ready(function(){
 
 	function onDataReceived(series) {
 		var placeholder = $("#plotplaceholder");
-		//var data = series['data'];
- 		var data = [
+		var data = series['data'];
+/*  example data
+		var data = [
 			{ label: "Series1",  data: 10},
 			{ label: "Series2",  data: 30},
 			{ label: "Series3",  data: 90},
 			{ label: "Series4",  data: 70},
 			{ label: "Series5",  data: 80},
 			{ label: "Series6",  data: 110}
-		];
+		]; */
 		placeholder.unbind();
 		$.plot(placeholder, data, {
 			series: {
 				pie: { 
-					show: true,
-					radius: 1,
+					show: true
+/* 					radius: 1,
 					label: {
 						show: true,
 						radius: 3/4,
@@ -75,7 +76,7 @@ $(document).ready(function(){
 						background: {
 							opacity: 0.5
 						}
-					}
+					} */
 				}
 			},
 			legend: {
