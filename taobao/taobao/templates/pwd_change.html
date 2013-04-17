@@ -1,0 +1,23 @@
+{% extends "base.html" %} 
+
+{% block content %}
+<div class="row">
+	<h3>修改您的密码</h3>
+	<div class="settings-item">
+		<form action="." method="post">
+			{% csrf_token %} {{ form.non_field_errors }}
+			<div class="fieldWrapper">
+				{{ form.new_password1.errors }} <label for="id_new_password1">输入新密码</label>
+				{{ form.new_password1 }}
+			</div>
+			<div class="fieldWrapper">
+				{{ form.new_password2.errors }} <label for="id_new_password2">再次输入新密码</label>
+				{{ form.new_password2 }}
+			</div>
+			<p>
+				<input type="submit" class="btn btn-primary" value="确认修改" />
+			</p>
+		</form>
+	</div>
+</div>
+{% endblock %}

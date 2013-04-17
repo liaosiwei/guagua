@@ -4,6 +4,8 @@ from random import randint
 from django.shortcuts import render_to_response
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import User
 
 import top as taobao
 import top.api as topapi
@@ -11,36 +13,35 @@ import top.api as topapi
 #taobao.setDefaultAppInfo("21446815", "5e8279097b48bd0eefcec5f48c7381eb")
 # next for sandbox test
 taobao.setDefaultAppInfo("1021446815", "sandbox97b48bd0eefcec5f48c7381eb")
-sessionkey = None
-print 'hello there'
+
+# top(): 用于获取数据的函数接口
+# 参数： 1. api_name: 需要调用的函数名称； 2. kwarg: 需要传入的参数; 3.sessionkey: 作为关键字参数传入sessionkey，如果没有该关键字则表示不使用sessionkey
+# 返回值： 正常返回json格式的数据，发生错误时返回异常
+# 例子： top('UserGetRequest', fields='nick, sex', sessionkey='xxxx') 
 def top(api_name, **kwarg):
-    global sessionkey
-    
     if hasattr(topapi, api_name):
         api = getattr(topapi, api_name)
     else:
-        raise ImportError('no api found')
+        raise ImportError('no api %s found' % aip_name)
     # 测试用
-    authrize = None
     a = api("gw.api.tbsandbox.com")
     #sdbsessionkey = '6101f23c7a9a2e8d90b4c74fbfd2bc21283630269ab37d42066555142' #user: sandbox_seller_0
     #sdbsessionkey = '6100c248a74c1e577ca89bd9b89f574a18a8f16a31452282076226627' # user: sandbox_b_20
     # 上线环境用 
     # a = api()
+    authrize = None
     while kwarg:
         key, value = kwarg.popitem()
         if hasattr(a, key):
             setattr(a, key, value)
         else:
-            if key is 'authrized' and value is 1:
-                authrize = sessionkey
-            elif key is not 'authrized':
+            if key is 'sessionkey':
+                authrize = value
+            elif key is not 'sessionkey':
                 raise AttributeError('some attributes do not exist!')    
     return a.getResponse(authrize)
     
-def fetchsession(request):
-    global sessionkey
-    
+def fetchuserinfo(request):
     if request.method == 'GET':
         get = request.GET.copy()
         if get.has_key('top_session'):
@@ -49,7 +50,25 @@ def fetchsession(request):
             para_str = base64.b64decode(get['top_parameters'])
             para_dict = dict([tuple(itme.split('=')) for item in para_str.split('&')])
             
+        user = User.objects.create_user(para_dict['nick'])
+        profile = user.get_profile()
+        profile.taobao_id = para_dict['visitor_id']
+        profile.taobao_nick = para_dict['nick']
+        profile.sessionkey = sessionkey
+        profile.start_date = user.date_joined
+        profile.save()
+        
     return HttpResponseRedirect('/')
+
+def password_change(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(user = request.user, data = request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'password_change_complete.html', {'form':form})
+    else:
+        form = PasswordChangeForm(user = request.user)
+    return render(request, 'pwd_change.html', {'form':form})
 
 def base(request):
     return render_to_response('base.html')
