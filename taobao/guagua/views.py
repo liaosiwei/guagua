@@ -1,4 +1,5 @@
 # coding=UTF-8
+import base64
 from random import randint
 from django.shortcuts import render_to_response
 from django.utils import simplejson
@@ -11,15 +12,14 @@ import top.api as topapi
 # next for sandbox test
 taobao.setDefaultAppInfo("1021446815", "sandbox97b48bd0eefcec5f48c7381eb")
 sessionkey = None
-
+print 'hello there'
 def top(api_name, **kwarg):
-    global topapi
     global sessionkey
     
     if hasattr(topapi, api_name):
         api = getattr(topapi, api_name)
     else:
-        raise KeyError('no api found')
+        raise ImportError('no api found')
     # 测试用
     authrize = None
     a = api("gw.api.tbsandbox.com")
@@ -35,7 +35,7 @@ def top(api_name, **kwarg):
             if key is 'authrized' and value is 1:
                 authrize = sessionkey
             elif key is not 'authrized':
-                raise KeyError('some keys do not exist!')    
+                raise AttributeError('some attributes do not exist!')    
     return a.getResponse(authrize)
     
 def fetchsession(request):
@@ -45,6 +45,9 @@ def fetchsession(request):
         get = request.GET.copy()
         if get.has_key('top_session'):
             sessionkey = get['top_session']
+        if get.has_key('top_parameters'):
+            para_str = base64.b64decode(get['top_parameters'])
+            para_dict = dict([tuple(itme.split('=')) for item in para_str.split('&')])
             
     return HttpResponseRedirect('/')
 
