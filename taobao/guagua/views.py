@@ -48,17 +48,17 @@ def fetchuserinfo(request):
             sessionkey = get['top_session']
         if get.has_key('top_parameters'):
             para_str = base64.b64decode(get['top_parameters'])
-            para_dict = dict([tuple(itme.split('=')) for item in para_str.split('&')])
-            
-        user = User.objects.create_user(para_dict['nick'])
+            para_dict = dict([tuple(item.split('=')) for item in para_str.split('&')])
+        print para_dict
+        user = User.objects.create_user(para_dict['visitor_nick'], password=para_dict['visitor_nick'])
         profile = user.get_profile()
         profile.taobao_id = para_dict['visitor_id']
-        profile.taobao_nick = para_dict['nick']
+        profile.taobao_nick = para_dict['visitor_nick']
         profile.sessionkey = sessionkey
         profile.start_date = user.date_joined
         profile.save()
         
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/pwd_change/')
 
 def password_change(request):
     if request.method == "POST":
