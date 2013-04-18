@@ -48,7 +48,7 @@ def fetchuserinfo(request):
             sessionkey = get['top_session']
         if get.has_key('top_parameters'):
             para_str = base64.b64decode(get['top_parameters'])
-            para_dict = dict([tuple(item.split('=')) for item in para_str.split('&')])
+            para_dict = dict([item.split('=') for item in para_str.split('&')])
         print para_dict
         user = User.objects.create_user(para_dict['visitor_nick'], password=para_dict['visitor_nick'])
         profile = user.get_profile()
