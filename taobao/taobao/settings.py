@@ -161,3 +161,4 @@ LOGGING = {
 }
 
 AUTH_PROFILE_MODULE = 'guagua.UserProfile'
+LOGIN_REDIRECT_URL = '/'

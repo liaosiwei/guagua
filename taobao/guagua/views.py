@@ -6,6 +6,7 @@ from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate
 
 import top as taobao
 import top.api as topapi
@@ -49,7 +50,7 @@ def fetchuserinfo(request):
         if get.has_key('top_parameters'):
             para_str = base64.b64decode(get['top_parameters'])
             para_dict = dict([item.split('=') for item in para_str.split('&')])
-        print para_dict
+
         user = User.objects.create_user(para_dict['visitor_nick'], password=para_dict['visitor_nick'])
         profile = user.get_profile()
         profile.taobao_id = para_dict['visitor_id']
@@ -57,18 +58,20 @@ def fetchuserinfo(request):
         profile.sessionkey = sessionkey
         profile.start_date = user.date_joined
         profile.save()
-        
+        user = authenticate(username = para_dict['visitor_nick'], password = para_dict['visitor_nick'])
+        login(request, user)
+        #login(request, user)
     return HttpResponseRedirect('/pwd_change/')
 
-def password_change(request):
-    if request.method == "POST":
-        form = PasswordChangeForm(user = request.user, data = request.POST)
-        if form.is_valid():
-            form.save()
-            return render(request, 'password_change_complete.html', {'form':form})
-    else:
-        form = PasswordChangeForm(user = request.user)
-    return render(request, 'pwd_change.html', {'form':form})
+#def password_change(request):
+#    if request.method == "POST":
+#        form = PasswordChangeForm(user = request.user, data = request.POST)
+#        if form.is_valid():
+#            form.save()
+#            return render(request, 'password_change_complete.html', {'form':form})
+#    else:
+#        form = PasswordChangeForm(user = request.user)
+#    return render(request, 'pwd_change.html', {'form':form})
 
 def base(request):
     return render_to_response('base.html')
