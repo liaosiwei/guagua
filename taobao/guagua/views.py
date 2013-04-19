@@ -1,7 +1,7 @@
 # coding=UTF-8
 import base64
 from random import randint
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.forms import PasswordChangeForm
@@ -20,6 +20,7 @@ taobao.setDefaultAppInfo("1021446815", "sandbox97b48bd0eefcec5f48c7381eb")
 # 返回值： 正常返回json格式的数据，发生错误时返回异常
 # 例子： top('UserGetRequest', fields='nick, sex', sessionkey='xxxx') 
 def top(api_name, **kwarg):
+    api_name = api_name + 'Request'
     if hasattr(topapi, api_name):
         api = getattr(topapi, api_name)
     else:
@@ -41,6 +42,15 @@ def top(api_name, **kwarg):
             elif key is not 'sessionkey':
                 raise AttributeError('some attributes do not exist!')    
     return a.getResponse(authrize)
+
+def test(api_name, id, **kwarg):
+    if kwarg.get('sessionkey', 0) is 1:
+        sessionkey = User.objects.get(id=id).userprofile.sessionkey
+        kwarg.update({'sessionkey': sessionkey})
+        res = top(api_name, **kwarg)
+    else:
+        res = top(api_name, **kwarg)
+    return res
     
 def fetchuserinfo(request):
     if request.method == 'GET':
@@ -63,24 +73,14 @@ def fetchuserinfo(request):
         #login(request, user)
     return HttpResponseRedirect('/pwd_change/')
 
-#def password_change(request):
-#    if request.method == "POST":
-#        form = PasswordChangeForm(user = request.user, data = request.POST)
-#        if form.is_valid():
-#            form.save()
-#            return render(request, 'password_change_complete.html', {'form':form})
-#    else:
-#        form = PasswordChangeForm(user = request.user)
-#    return render(request, 'pwd_change.html', {'form':form})
-
 def base(request):
-    return render_to_response('base.html')
+    return render(request, 'base.html')
 
 def index(request):
-    return render_to_response('index.html')
+    return render(request, 'index.html')
 
 def plot(request):
-    return render_to_response('plot.html')
+    return render(request, 'plot.html')
 
 def ajax_plotdata(request):
     to_return = {'stat': 'failed', 'data': ''}
@@ -95,7 +95,7 @@ def ajax_plotdata(request):
     return HttpResponse(serialized, mimetype="application/json")
 
 def pie(request):
-    return render_to_response('pie.html')
+    return render(request, 'pie.html')
 
 def ajax_piedata(request):
     to_return = {'stat': 'failed', 'data': ''}

@@ -53,10 +53,10 @@ def sign(secret, parameters):
         keys = parameters.keys()
         keys.sort()
         
-        parameters = "%s%s%s" % (secret,
+        parameters_str = "%s%s%s" % (secret,
             str().join('%s%s' % (key, parameters[key]) for key in keys),
             secret)
-    sign = hashlib.md5(parameters).hexdigest().upper()
+    sign = hashlib.md5(parameters_str).hexdigest().upper()
     return sign
 
 def mixStr(pstr):
@@ -227,6 +227,12 @@ class RestApi(object):
         if authrize is not None:
             sys_parameters[P_SESSION] = authrize
         application_parameter = self.getApplicationParameters()
+        
+        # Patch for unicode converting to byte
+        for key in application_parameter.keys():
+            if isinstance(application_parameter[key], unicode):
+                application_parameter[key] = application_parameter[key].encode('utf-8')
+            
         sign_parameter = sys_parameters.copy()
         sign_parameter.update(application_parameter)
         sys_parameters[P_SIGN] = sign(self.__secret, sign_parameter)
