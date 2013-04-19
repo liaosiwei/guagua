@@ -32,4 +32,3 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-taobao/taobao/settings.py
