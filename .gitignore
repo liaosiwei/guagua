@@ -32,4 +32,4 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-./taobao/taobao/settings.py
+/taobao/taobao/settings.py
