@@ -47,19 +47,19 @@ def test_asyn_done(task_id):
     count = 0
     while flag:
         count += 1
-        if count >= 240:
+        if count >= 360:
             break
         res = top('TopatsResultGet', task_id=task_id)
         print "try to access data for %d times" % count
         print "accessing result is %s" % res['topats_result_get_response']['task']['status']
-        if res['topats_result_get_response']['task']['status'] is 'done':
+        if res['topats_result_get_response']['task']['status'] == 'done':
             flag = 0
         else:
             sleep(5)
     return ((flag and [0] or [1])[0], res)
 
 # asyn function to get trade sold data between start_time and end_time. E.g
-# top('TopatsTradesSoldGet', id=2, fields='tid, buyer_nick, payment', start_time='20130301', end_time='20130331')
+# top('TopatsTradesSoldGet', id=2, fields='tid, buyer_nick, payment', start_time='20130301', end_time='20130331') trying 3590110
 def trade_sold_get(id, start_time, end_time):
     res = top('TopatsTradesSoldGet', id=id, fields='tid, buyer_nick, buyer_area, payment, created', start_time=start_time, end_time=end_time)
     task_id = res['topats_trades_sold_get_response']['task']['task_id']
