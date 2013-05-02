@@ -2,6 +2,7 @@
 import os
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIRNAME = PROJECT_ROOT.split(os.sep)[-1]
+DB_PATH = PROJECT_ROOT[:PROJECT_ROOT.rfind(os.sep)].replace(os.sep, '/') + '/sqlite.db'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -15,7 +16,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': PROJECT_ROOT[:PROJECT_ROOT.rfind(os.sep)].replace(os.sep, '/') + '/sqlite.db',                      # Or path to database file if using sqlite3.
+        'NAME': DB_PATH,                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -124,6 +125,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
+    'djcelery',
+    'kombu.transport.django',
     'guagua',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
@@ -162,3 +165,14 @@ LOGGING = {
 
 AUTH_PROFILE_MODULE = 'guagua.UserProfile'
 LOGIN_REDIRECT_URL = '/'
+
+# for djcelery
+import djcelery
+djcelery.setup_loader()
+
+#BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+#CELERY_RESULT_BACKEND = "amqp"
+#CELERY_AMQP_TASK_RESULT_EXPIRES = 18000  # 5 hours.
+BROKER_URL = "django://"
+CELERY_RESULT_BACKEND = "database"
+CELERY_RESULT_DBURI = "sqlite:////" + DB_PATH

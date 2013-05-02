@@ -16,7 +16,7 @@ taobao.setDefaultAppInfo("1021446815", "sandbox97b48bd0eefcec5f48c7381eb")
 # top(): 用于获取数据的函数接口
 # 参数： 1. api_name: 需要调用的函数名称； 2. kwarg: 需要传入的参数; 3.sessionkey: 作为关键字参数传入sessionkey，如果没有该关键字则表示不使用sessionkey
 # 返回值： 正常返回json格式的数据，发生错误时返回异常
-# 例子： top('UserGetRequest', fields='nick, sex', sessionkey='xxxx') 
+# 例子： top('UserGetRequest', fields='nick, sex', [id=XX]) 
 def top(api_name, **kwarg):
     api_name = api_name + 'Request'
     if hasattr(topapi, api_name):
@@ -50,8 +50,6 @@ def test_asyn_done(task_id):
         if count >= 360:
             break
         res = top('TopatsResultGet', task_id=task_id)
-        print "try to access data for %d times" % count
-        print "accessing result is %s" % res['topats_result_get_response']['task']['status']
         if res['topats_result_get_response']['task']['status'] == 'done':
             flag = 0
         else:
@@ -63,7 +61,6 @@ def test_asyn_done(task_id):
 def trade_sold_get(id, start_time, end_time):
     res = top('TopatsTradesSoldGet', id=id, fields='tid, buyer_nick, buyer_area, payment, created', start_time=start_time, end_time=end_time)
     task_id = res['topats_trades_sold_get_response']['task']['task_id']
-    print 'begin task for id %s' % task_id
     status, result = test_asyn_done(task_id)
     if status:
         print 'access data succeeded'
@@ -84,11 +81,11 @@ def trade_sold_get(id, start_time, end_time):
                 r = d.decode(line)['trade_fullinfo_get_response']['trade']
                 TradeSoldRecord.objects.create(user=user, buyer_nick=r['buyer_nick'], buyer_area=r['buyer_area'], 
                                                tid=r['tid'], payment=r['payment'], created=r['created'])
-        print 'storing data succeed'
         return 1
     else:
         return 0
                 
-         
+def trade_inc_get(id, start_time, end_time):
+    res = top('TradesSoldIncrementGet', id=id, fields='tid, buyer_nick, buyer_area, payment, created', start_modified=start_time, end_modified=end_time)
     
     
