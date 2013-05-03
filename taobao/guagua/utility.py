@@ -22,7 +22,7 @@ def top(api_name, **kwarg):
     if hasattr(topapi, api_name):
         api = getattr(topapi, api_name)
     else:
-        raise ImportError('no api %s found' % aip_name)
+        raise ImportError('no api %s found' % api_name)
     # 测试用
     a = api("gw.api.tbsandbox.com")
     #sdbsessionkey = '6101f23c7a9a2e8d90b4c74fbfd2bc21283630269ab37d42066555142' #user: sandbox_seller_0
